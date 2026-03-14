@@ -3,42 +3,191 @@
 
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HTML Paint</title>
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <style>
-        #myCan {
-            border: 1px solid black;
-        }
-        
-        #drawhere {
-            width: 300px;
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        a{
-            text-decoration-line: none;
-            color: red;
-            font-family: cursive;
-            font-size: 30px;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            color: #222;
+        }
+
+        header p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        header a {
+            color: #4a90d9;
+            text-decoration: none;
+        }
+
+        header a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        #myCan {
+            display: block;
+            width: 100%;
+            height: 500px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            background: #fff;
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+            margin-top: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .toolbar label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .toolbar input[type="color"] {
+            border: none;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .toolbar input[type="range"] {
+            width: 120px;
+            cursor: pointer;
+        }
+
+        .toolbar .width-value {
+            font-size: 0.85rem;
+            min-width: 2ch;
+            color: #555;
+        }
+
+        .btn {
+            padding: 0.5rem 1.25rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.85;
+        }
+
+        .btn-save {
+            background: #4a90d9;
+            color: #fff;
+        }
+
+        .btn-clear {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        .btn-undo {
+            background: #7f8c8d;
+            color: #fff;
+        }
+
+        .output-section {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .output-section h2 {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 0.5rem;
+        }
+
+        #canvasout {
+            display: none;
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        footer {
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: #999;
         }
     </style>
 </head>
 
 <body>
-    <a href="https://linkedin.com/in/stabgan">Kaustabh Ganguly 2019 - HTML canvas</a>
-    <canvas id="myCan" width="800" height="400"></canvas>
-    <div id="drawhere">
-        <div id="xsave" class="btn btn-primary">Save</div>
-        <div id="xclear" class="btn btn-danger">Clear</div>
-        <label for="pen-color">Choose a color</label>
-        <input id="pen-color" type="color" />
-        <label for="pen-width">Choose a stroke width</label>
-        <input id="pen-width" type="range" min="1" max="20" />
-    </div>
-    <h1>Click Save to output in image format and save :</h1>
-    <img id="canvasout" style="display:none;">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-    <script src='script.js'></script>
+    <header>
+        <h1>🎨 HTML Paint</h1>
+        <p>Draw on the canvas below — by <a href="https://linkedin.com/in/stabgan" target="_blank" rel="noopener noreferrer">Kaustabh Ganguly</a></p>
+    </header>
+
+    <main>
+        <canvas id="myCan" width="900" height="500"></canvas>
+
+        <div class="toolbar" role="toolbar" aria-label="Drawing tools">
+            <button id="xsave" class="btn btn-save" type="button">💾 Save</button>
+            <button id="xclear" class="btn btn-clear" type="button">🗑 Clear</button>
+            <button id="xundo" class="btn btn-undo" type="button">↩ Undo</button>
+
+            <label for="pen-color">Color</label>
+            <input id="pen-color" type="color" value="#000000" aria-label="Pen color">
+
+            <label for="pen-width">Width</label>
+            <input id="pen-width" type="range" min="1" max="30" value="3" aria-label="Pen width">
+            <span class="width-value" id="width-display">3</span>
+        </div>
+
+        <section class="output-section">
+            <h2>Saved preview</h2>
+            <img id="canvasout" alt="Saved canvas drawing">
+        </section>
+    </main>
+
+    <footer>HTML Canvas Paint &copy; 2024</footer>
+
+    <script src="script.js"></script>
 </body>
 
 </html>
